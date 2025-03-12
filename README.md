@@ -29,11 +29,18 @@ Our implementation is done in Python. We use [Pytorch](https://pytorch.org/) for
 ```
 pip3 install matplotlib numpy termcolor scipy navpy
 ```
+or with conda:
+
+```
+conda env create -f environment.yml
+conda activate ai-imu
+```
     
 4.  Clone this repo
 ```
 git clone https://github.com/mbrossar/ai-imu-dr.git
 ```
+
 
 ### Testing
 1. Download reformated pickle format of the 00-11 KITTI IMU raw data at this [url](https://github.com/user-attachments/files/17930695/data.zip), extract and copy then in the `data` folder.
@@ -60,6 +67,11 @@ This first launches the filters for the all sequences. Then, results are plotted
 
 ### Training
 You can train for testing another sequence (we do not find difference in the results) or for our own sequence by modifying the dataset class.
+
+Uncomment some strings, below:
+```
+# choose what to do
+```
 
 
 ## Paper

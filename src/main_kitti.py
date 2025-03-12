@@ -118,15 +118,16 @@ class KITTIDataset(BaseDataset):
     def __init__(self, args):
         super(KITTIDataset, self).__init__(args)
 
+        # i commented them out to avoid errors
         self.datasets_validatation_filter['2011_09_30_drive_0028_extract'] = [11231, 53650]
-        self.datasets_train_filter["2011_10_03_drive_0042_extract"] = [0, None]
+        # self.datasets_train_filter["2011_10_03_drive_0042_extract"] = [0, None]
         self.datasets_train_filter["2011_09_30_drive_0018_extract"] = [0, 15000]
-        self.datasets_train_filter["2011_09_30_drive_0020_extract"] = [0, None]
-        self.datasets_train_filter["2011_09_30_drive_0027_extract"] = [0, None]
-        self.datasets_train_filter["2011_09_30_drive_0033_extract"] = [0, None]
+        # self.datasets_train_filter["2011_09_30_drive_0020_extract"] = [0, None]
+        # self.datasets_train_filter["2011_09_30_drive_0027_extract"] = [0, None]
+        # self.datasets_train_filter["2011_09_30_drive_0033_extract"] = [0, None]
         self.datasets_train_filter["2011_10_03_drive_0027_extract"] = [0, 18000]
         self.datasets_train_filter["2011_10_03_drive_0034_extract"] = [0, 31000]
-        self.datasets_train_filter["2011_09_30_drive_0034_extract"] = [0, None]
+        # self.datasets_train_filter["2011_09_30_drive_0034_extract"] = [0, None]
 
         for dataset_fake in KITTIDataset.datasets_fake:
             if dataset_fake in self.datasets:
@@ -455,7 +456,8 @@ def test_filter(args, dataset):
 
 
 class KITTIArgs():
-        path_data_base = "/media/mines/46230797-4d43-4860-9b76-ce35e699ea47/KITTI/raw"
+        # path_data_base = "/media/mines/46230797-4d43-4860-9b76-ce35e699ea47/KITTI/raw"
+        path_data_base = "../data"
         path_data_save = "../data"
         path_results = "../results"
         path_temp = "../temp"
@@ -469,10 +471,18 @@ class KITTIArgs():
         continue_training = True
 
         # choose what to do
-        read_data = 0
+
+        read_data = 0 # test
         train_filter = 0
         test_filter = 1
         results_filter = 1
+
+        # read_data = 1 # train
+        # train_filter = 1
+        # test_filter = 0
+        # results_filter = 0
+        
+
         dataset_class = KITTIDataset
         parameter_class = KITTIParameters
 

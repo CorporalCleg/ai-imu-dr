@@ -54,12 +54,13 @@ These file can alternatively be generated after download the KITTI raw data and 
 
 2. Download training parameters at this [url](https://www.dropbox.com/s/77kq4s7ziyvsrmi/temp.zip), extract and copy in the `temp` folder.
 ```
-wget "https://www.dropbox.com/s/77kq4s7ziyvsrmi/temp.zip"
+wget "https://github.com/DragonEmperorG/ai-imu-dr/raw/refs/heads/master/temp/temp.zip"
 unzip temp.zip -d ai-imu-dr/temp
 rm temp.zip
 ```
 4. Test the filters !
 ```
+mkdir ai-imu-dr/results
 cd ai-imu-dr/src
 python3 main_kitti.py
 ```

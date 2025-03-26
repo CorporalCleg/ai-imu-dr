@@ -211,25 +211,26 @@ class NUMPYIEKF:
         return P
 
     def update(self, Rot, v, p, b_omega, b_acc, Rot_c_i, t_c_i, P, u, i, measurement_cov):
+        Omega = self.skew(u[:3] - b_omega)  # skew of angular velocity
         # orientation of body frame
         Rot_body = Rot.dot(Rot_c_i)
         # velocity in imu frame
         v_imu = Rot.T.dot(v)
-        # velocity in body frame
-        v_body = Rot_c_i.T.dot(v_imu)
         # velocity in body frame in the vehicle axis
-        v_body += self.skew(t_c_i).dot(u[:3] - b_omega)
-        Omega = self.skew(u[:3] - b_omega)
+        v_body = Rot_c_i.T.dot(v_imu + Omega.dot(t_c_i))
 
         # Jacobian w.r.t. car frame
-        H_v_imu = Rot_c_i.T.dot(self.skew(v_imu))
-        H_t_c_i = -self.skew(t_c_i)
-
+        # matrix B
+        H_v_imu = Rot_c_i.T.dot(self.skew(v_imu + Omega.dot(t_c_i))) 
+        # Jacobian matrix for omega-bias
+        H_t_c_i = Rot_c_i.T.dot(-self.skew(t_c_i))
+        # matrix C
+        H_i_bias = Rot_c_i.T.dot(-Omega)
         H = np.zeros((2, self.P_dim))
         H[:, 3:6] = Rot_body.T[1:]
         H[:, 15:18] = H_v_imu[1:]
         H[:, 9:12] = H_t_c_i[1:]
-        H[:, 18:21] = -Omega[1:]
+        H[:, 18:21] = H_i_bias[1:]
         r = - v_body[1:]
         R = np.diag(measurement_cov)
         Rot_up, v_up, p_up, b_omega_up, b_acc_up, Rot_c_i_up, t_c_i_up, P_up = \
@@ -300,11 +301,14 @@ class NUMPYIEKF:
                         [-axis[1], axis[0], 0]])
             s = np.sin(angle)
             c = np.cos(angle)
-            J = (s / angle) * NUMPYIEKF.Id3 \
-                   + (1 - s / angle) * np.outer(axis, axis) + ((1 - c) / angle) * skew_axis
+            a_ = (1 - c) / angle
+            b_ = (1 - s / angle)
+            J = (s / angle) * NUMPYIEKF.Id3 + b_ * np.outer(axis, axis) + a_ * skew_axis
             Rot = c * NUMPYIEKF.Id3 + (1 - c) * np.outer(axis, axis) + s * skew_axis
 
         x = J.dot(xi[3:].reshape(-1, 3).T)
+        #  Rot is for rotation 
+        #  x is for velocity and position update
         return Rot, x
 
     @staticmethod

@@ -208,23 +208,27 @@ class TORCHIEKF(torch.nn.Module, NUMPYIEKF):
         return P_new
 
     def update(self, Rot, v, p, b_omega, b_acc, Rot_c_i, t_c_i, P, u, i, measurement_cov):
+        Omega = self.skew(u[:3] - b_omega)  # skew of angular velocity
         # orientation of body frame
         Rot_body = Rot.mm(Rot_c_i)
         # velocity in imu frame
         v_imu = Rot.t().mv(v)
-        omega = u[:3] - b_omega
-        # velocity in body frame
-        v_body = Rot_c_i.t().mv(v_imu) + self.skew(t_c_i).mv(omega)
-        Omega = self.skew(omega)
+        # velocity in body frame in the vehicle axis
+        v_body = Rot_c_i.t().mv(v_imu + Omega.mv(t_c_i))
+               
         # Jacobian in car frame
-        H_v_imu = Rot_c_i.t().mm(self.skew(v_imu))
-        H_t_c_i = self.skew(t_c_i)
+        # matrix B in the paper
+        H_v_imu = Rot_c_i.t().mm(self.skew(v_imu + Omega.mv(t_c_i)))
+        # Jacobian matrix for omega-bias
+        H_t_c_i = Rot_c_i.t().mm(-self.skew(t_c_i))
+        # matrix C
+        H_i_bias = Rot_c_i.t().mm(-Omega)
 
         H = P.new_zeros(2, self.P_dim)
         H[:, 3:6] = Rot_body.t()[1:]
         H[:, 15:18] = H_v_imu[1:]
         H[:, 9:12] = H_t_c_i[1:]
-        H[:, 18:21] = -Omega[1:]
+        H[:, 18:21] = H_i_bias[1:]
         r = - v_body[1:]
         R = torch.diag(measurement_cov)
 

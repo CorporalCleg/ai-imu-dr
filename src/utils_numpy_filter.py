@@ -251,12 +251,14 @@ class NUMPYIEKF:
         term_6_7_new = M1 @ R_c.T @ self.skew(alpha1) \
                    - np.squeeze(np.array([1,0,0]) @ R_c.T @ self.skew(alpha2)) * omega_car[2] \
                    - v_c[0] * (M3 @ R_c.T @ self.skew(alpha3))
+        term_6_7_new = term_6_7_new.astype(float)
         omega_real = omega_n - b_omega
         term_7_7_new = M1 @ R_c.T @ (np.outer(omega_real,omega_real) - (omega_real.T).dot(omega_real) * np.eye(3)) \
                             + M2 @ R_c.T @ self.skew( - omega_real) * (omega_car[2])
-        J_new = np.hstack([term_1_7_new, term_2_7_new, term_3_7_new, term_4_7_new, term_5_7_new, term_6_7_new, term_7_7_new])   
-        
-        return np.vstack([J_old, J_new])
+
+        J_new = np.concatenate([term_1_7_new, term_2_7_new, term_3_7_new, term_4_7_new, term_5_7_new, term_6_7_new, term_7_7_new], axis = 1)   
+        obs_new = a_car[1] - v_c[0] * omega_car[2]
+        return np.concatenate([J_old, J_new], axis = 0) , obs_new
 
     def update(self, Rot, v, p, b_omega, b_acc, Rot_c_i, t_c_i, P, u, i, measurement_cov):
         # for more details check here 
@@ -270,30 +272,27 @@ class NUMPYIEKF:
         # velocity in body frame in the vehicle axis
         v_body = Rot_c_i.T.dot(v_imu + Omega.dot(t_c_i))
 
-        # Jacobian w.r.t. car frame
-        # matrix B
-        H_v_imu = Rot_c_i.T.dot(self.skew(v_imu + Omega.dot(t_c_i))) 
-        # Jacobian matrix for omega-bias
-        H_t_c_i = Rot_c_i.T.dot(-self.skew(t_c_i))
-        # matrix C
-        H_i_bias = Rot_c_i.T.dot(-Omega)
-        H = np.zeros((2, self.P_dim))
-        H[:, 3:6] = Rot_body.T[1:]
-        H[:, 15:18] = H_v_imu[1:]
-        H[:, 9:12] = H_t_c_i[1:]
-        H[:, 18:21] = H_i_bias[1:]
-        r = - v_body[1:]
-        R = np.diag(measurement_cov)
-        
-        
-        
-        
-        H[2, :] = self.custom_jacobian(Rot, v, p, b_omega, b_acc, Rot_c_i, t_c_i, u[:3], u[3:])
+        # # Jacobian w.r.t. car frame
+        # # matrix B
+        # H_v_imu = Rot_c_i.T.dot(self.skew(v_imu + Omega.dot(t_c_i))) 
+        # # Jacobian matrix for omega-bias
+        # H_t_c_i = Rot_c_i.T.dot(-self.skew(t_c_i))
+        # # matrix C
+        # H_i_bias = Rot_c_i.T.dot(-Omega)
+
+        H = np.zeros((3, self.P_dim))
+        # H[:, 3:6] = Rot_body.T[1:]
+        # H[:, 15:18] = H_v_imu[1:]
+        # H[:, 9:12] = H_t_c_i[1:]
+        # H[:, 18:21] = H_i_bias[1:]
+
+        # R = np.diag(measurement_cov)
+        R = np.eye(3)
+        H, a_car_y = self.custom_jacobian(Rot, v, p, b_omega, b_acc, Rot_c_i, t_c_i, u[:3], u[3:])
+        r = np.concatenate((-v_body[1:], -a_car_y), axis=0)
+
         Rot_up, v_up, p_up, b_omega_up, b_acc_up, Rot_c_i_up, t_c_i_up, P_up = \
             self.state_and_cov_update(Rot, v, p, b_omega, b_acc, Rot_c_i, t_c_i, P, H, r, R)
-        
-        
-        
         
         return Rot_up, v_up, p_up, b_omega_up, b_acc_up, Rot_c_i_up, t_c_i_up, P_up
 

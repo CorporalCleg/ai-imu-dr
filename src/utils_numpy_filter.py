@@ -74,7 +74,7 @@ class NUMPYIEKF:
         """Zero lateral velocity covariance"""
         cov_up = 300
         """Zero lateral velocity covariance"""
-        acc = 0.8
+        acc = 2.8 # acc cov
 
         cov_Rot0 = 1e-3
         """initial pitch and roll covariance"""

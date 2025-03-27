@@ -8,7 +8,6 @@
 
 <small>🔹In the context of intelligent vehicles, robust and accurate dead reckoning based on the Inertial Measurement Unit (IMU) may prove useful to correlate feeds from imaging sensors, to safely navigate through obstructions, or for safe emergency stop in the extreme case of other sensors failure.</small>
 
-<small>🔹In the context of intelligent vehicles, robust and accurate dead reckoning based on the Inertial Measurement Unit (IMU) may prove useful to correlate feeds from imaging sensors, to safely navigate through obstructions, or for safe emergency stop in the extreme case of other sensors failure.</small>
 
 This the repo of the [Sk "Perception in robotics"](https://github.com/g-ferrer/perception-in-robotics-2025) project. Our goal was to improve filter performance adding new pseudo-measurement model. 
 

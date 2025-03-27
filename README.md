@@ -6,10 +6,9 @@
 
 ## Overview
 
-<span style="font-size: small; opacity: 0.5;">In the context of intelligent vehicles, robust and accurate dead reckoning based on the Inertial Measurement Unit (IMU) may prove useful to correlate feeds from imaging sensors, to safely navigate through obstructions, or for safe emergency stop in the extreme case of other sensors failure.
-</span>
+<small>🔹In the context of intelligent vehicles, robust and accurate dead reckoning based on the Inertial Measurement Unit (IMU) may prove useful to correlate feeds from imaging sensors, to safely navigate through obstructions, or for safe emergency stop in the extreme case of other sensors failure.</small>
 
-<span style="font-size: small; opacity: 0.5;">This repo contains the code of our novel accurate method for dead reckoning of wheeled vehicles based only on an IMU. The key components of the method are the Kalman filter and the use of deep neural networks to dynamically adapt the noise parameters of the filter. Our dead reckoning inertial method based only on the IMU accurately estimates 3D position, velocity, orientation of the vehicle and self-calibrates the IMU biases. We achieve on the KITTI odometry dataset on average a 1.10% translational error and the algorithm competes with top-ranked methods which, by contrast, use LiDAR or stereo vision.</span>
+<small>🔹In the context of intelligent vehicles, robust and accurate dead reckoning based on the Inertial Measurement Unit (IMU) may prove useful to correlate feeds from imaging sensors, to safely navigate through obstructions, or for safe emergency stop in the extreme case of other sensors failure.</small>
 
 This the repo of the [Sk "Perception in robotics"](https://github.com/g-ferrer/perception-in-robotics-2025) project. Our goal was to improve filter performance adding new pseudo-measurement model. 
 
